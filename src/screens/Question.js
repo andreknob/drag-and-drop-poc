@@ -24,20 +24,59 @@ const DROPPABLES = {
     CHOICES_COLUMN: 'choicesColumn'
 };
 
+const RIGHT_ANSWER = 'option_3';
+
 const Container = styled.div`
-  display: flex;
+    display: flex;
+    flex-direction: column;
+`;
+const DnDContainer = styled.div`
+    display: flex;
+`;
+const ResultContainer = styled.div`
+    margin-left: 8px;
+    width: 500px;
+
+    display: flex;
+    justify-content: space-between;
+`;
+const StyledButton = styled.button`
+    background-color: white;
+    border: 1px solid lightgrey;
+    border-radius: 2px;
+    padding: 8px;
+    cursor: pointer;
+    margin-right: 8px;
+`;
+// todo: Check how to improve this code duplication, both buttons are almost equal
+const WrongAnswerButton = styled.button`
+    background-color: white;
+    border: 1px solid lightgrey;
+    border-radius: 2px;
+    padding: 8px;
+    cursor: pointer;
+    margin-left: 8px;
+`;
+const WrongAnswerContainer = styled.div`
+    margin-left: 8px;
 `;
 
 function Question() {
     const [state, setState] = useState({ choices: CHOICES }); 
     const [startingDroppableId, setStartingDroppableId] = useState();
+    const [isDraggingChoice, setIsDraggingChoice] = useState(false);
+    const [showResult, setShowResult] = useState(false);
 
-    const handleDragStart = useCallback((item) => {
-        setStartingDroppableId(item.source.droppableId);
+    const handleDragStart = useCallback(({ source }) => {
+        setStartingDroppableId(source.droppableId);
+
+        if (source.droppableId === DROPPABLES.CHOICES_COLUMN) {
+            setIsDraggingChoice(true);
+        }
       }, []);
 
-    const handleDragEnd = useCallback((item) => {
-        const { destination, draggableId } = item;
+    const handleDragEnd = useCallback(({ destination, draggableId }) => {
+        setIsDraggingChoice(false);
 
         let answer = {};
         const choices = [...state.choices];
@@ -47,8 +86,11 @@ function Question() {
         }
 
         if (destination.droppableId === DROPPABLES.ANSWER) {
-            const index = choices.findIndex(answer => answer.id === draggableId);
+            const index = choices.findIndex(choice => choice.id === draggableId);
 
+            if (state.answer && state.answer.id) {
+                choices.push(state.answer);
+            }
             answer = choices[index];
             choices.splice(index, 1);
         } else {
@@ -58,16 +100,54 @@ function Question() {
         setState({ answer, choices });
     }, [state]);
 
+    const handleTryAgain = useCallback(() => {
+        setShowResult(false);
+
+        const choices = [...state.choices];
+        choices.push(state.answer);
+
+        setState({
+            choices,
+            answer: {},
+        });
+    }, [state]);
+    
+    // todo: see how to improve this render, it has a lot of ifs below
     return (
-        <DragDropContext
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        >
-            <Container>
-                <Answer img answer={state.answer} isDropDisabled={startingDroppableId === DROPPABLES.ANSWER}/>
-                <ChoicesColumn choices={state.choices} isDropDisabled={startingDroppableId === DROPPABLES.CHOICES_COLUMN}/>
-            </Container>
-        </DragDropContext>
+        <Container>
+            <DragDropContext
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+            >
+                <DnDContainer>
+                    <Answer
+                        img
+                        answer={state.answer}
+                        isDropDisabled={startingDroppableId === DROPPABLES.ANSWER}
+                        isDraggingChoice={isDraggingChoice} />
+                    <ChoicesColumn
+                        choices={state.choices}
+                        isDropDisabled={startingDroppableId === DROPPABLES.CHOICES_COLUMN} />
+                </DnDContainer>
+            </DragDropContext>
+            {state.answer && state.answer.id != null ?
+                (
+                    <ResultContainer>
+                        <StyledButton onClick={() => setShowResult(true)}>Check result</StyledButton>
+                        {showResult ?
+                            state.answer.id === RIGHT_ANSWER ?
+                               <span>The answer is correct!</span>
+                               : <WrongAnswerContainer>
+                                   Wrong answer!
+                                   <WrongAnswerButton onClick={handleTryAgain}>Try again</WrongAnswerButton>
+                                 </WrongAnswerContainer>
+                            : ''
+                        }
+                    </ResultContainer>
+                )
+                : ''
+            }
+        </Container>
     )
 }
 

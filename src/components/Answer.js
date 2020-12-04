@@ -6,7 +6,7 @@ const Container = styled.div`
     margin: 8px;
     border: 1px solid lightgrey;
     border-radius: 2px;
-    width: 420px;
+    width: 500px;
 
     display: flex;
     flex-direction: column;
@@ -16,51 +16,52 @@ const Title = styled.h3`
 `;
 const AnswerContainer = styled.div`
     display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
     flex-grow: 1;
-    justify-content: center;
-    align-items: center;
-
+    min-height: 350px;
     padding: 8px;
+
 `;
 const AnswerDiv = styled.div`
-    display: flex;
-    flex-grow: 1;
+    visibility: ${props => (props.isDraggingChoice && props.isDraggingOver ? 'hidden' : 'visible')};
 
     border: 1px solid lightgrey;
     border-radius: 2px;
     padding: 8px;
+    min-height: 20px;
+    width: 186px;
 `;
-
-function Answer({ answer = {}, title = 'Drag your answer here', isDropDisabled }) {
+// todo: separate this component
+function Answer({ answer = {}, title = 'Drag your answer here', isDropDisabled, isDraggingChoice }) {
     return (
         <Container>
             <Title>{title}</Title>
-            <AnswerContainer>
                 <Droppable
                     droppableId={'answer'}
                     isDropDisabled={isDropDisabled}>
-                    {(provided) => (
-                        <AnswerDiv
+                    {(provided, snapshot) => (
+                        <AnswerContainer
                             ref={provided.innerRef}
-                            {...provided.droppableProps}
-                        >
-                            <Draggable draggableId={answer.id} index={0}>
-                                {(draggableProvided, snapshot) => (
-                                    <div
+                            {...provided.droppableProps}>
+
+                            <Draggable draggableId={answer.id ? answer.id : 'no-choice'} index={0}>
+                                {(draggableProvided) => (
+                                    <AnswerDiv
                                         {...draggableProvided.draggableProps}
                                         {...draggableProvided.dragHandleProps}
                                         ref={draggableProvided.innerRef}
-                                        isDragging={snapshot.isDragging}
+                                        isDraggingChoice={isDraggingChoice}
+                                        isDraggingOver={snapshot.isDraggingOver}
                                     >
                                         {answer.label}
-                                    </div>
+                                    </AnswerDiv>
                                 )}
                             </Draggable>
                             {provided.placeholder}
-                        </AnswerDiv>
+                    </AnswerContainer>
                     )}
                 </Droppable>
-            </AnswerContainer>
         </Container>
     );
 }
