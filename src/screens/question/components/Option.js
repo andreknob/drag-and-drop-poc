@@ -10,9 +10,9 @@ const Container = styled.div`
     background-color: ${props => (props.isDragging ? 'lightgreen' : 'white')};
 `;
 
-const Choice = ({ choice, index }) => {
+const Option = ({ option, index }) => {
     return (
-        <Draggable draggableId={choice.id} index={index}>
+        <Draggable draggableId={option.id} index={index}>
             {(provided, snapshot) => (
                 <Container
                     {...provided.draggableProps}
@@ -20,11 +20,11 @@ const Choice = ({ choice, index }) => {
                     ref={provided.innerRef}
                     isDragging={snapshot.isDragging}
                 >
-                    {choice.label}
+                    {option.label}
                 </Container>
             )}
         </Draggable>
     );
 }
 
-export default Choice;
+export default Option;

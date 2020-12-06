@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Droppable } from 'react-beautiful-dnd';
-import Choice from './Choice';
+import Option from './Option';
+import { DROPPABLES } from '../Constants';
 
 const Container = styled.div`
     margin: 8px;
@@ -15,7 +16,7 @@ const Container = styled.div`
 const Title = styled.h3`
     padding: 8px;
 `;
-const ChoicesList = styled.div`
+const OptionsList = styled.div`
     padding: 8px;
     transition: background-color 0.2s ease;
     background-color: ${props => (props.isDraggingOver ? 'skyblue' : 'white')};
@@ -23,26 +24,26 @@ const ChoicesList = styled.div`
     min-height: 100px;
 `;
 
-function ChoicesColumn({ choices, title = 'Choose one option from below', isDropDisabled }) {
+function OptionsColumn({ options, title = 'Choose one option from below', isDropDisabled }) {
     return (
         <Container>
             <Title>{title}</Title>
             <Droppable
-                droppableId={'choicesColumn'}
+                droppableId={DROPPABLES.OPTIONS_COLUMN}
                 isDropDisabled={isDropDisabled}>
                 {(provided, snapshot) => (
-                    <ChoicesList
+                    <OptionsList
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                         isDraggingOver={snapshot.isDraggingOver}
                     >
-                        {choices.map((choice, index) => <Choice key={choice.id} choice={choice} index={index} />)}
+                        {options.map((option, index) => <Option key={option.id} option={option} index={index} />)}
                         {provided.placeholder}
-                    </ChoicesList>
+                    </OptionsList>
                 )}
             </Droppable>
         </Container>
     );
 }
 
-export default ChoicesColumn;
+export default OptionsColumn;

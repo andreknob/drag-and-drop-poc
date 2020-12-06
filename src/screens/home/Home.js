@@ -2,8 +2,8 @@ import React, { useState, useCallback } from 'react';
 import '@atlaskit/css-reset';
 import styled from 'styled-components';
 import { DragDropContext } from 'react-beautiful-dnd';
-import initialData from '../initialData';
-import Column from '../components/Column';
+import initialData from './initialData';
+import Column from './components/Column';
 
 const Container = styled.div`
   display: flex;

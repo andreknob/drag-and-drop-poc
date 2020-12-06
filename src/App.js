@@ -1,7 +1,7 @@
 import React from 'react';
 import Nav from './components/Nav';
-import Home from './screens/Home';
-import Question from './screens/Question';
+import Home from './screens/home/Home';
+import Question from './screens/question/Question';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 function App() {
