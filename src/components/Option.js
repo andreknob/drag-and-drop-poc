@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Draggable } from 'react-beautiful-dnd'
 
-const Container = styled.div`
+const StyledContainer = styled.div`
     border: 1px solid lightgrey;
     border-radius: 2px;
     padding: 8px;
@@ -10,7 +10,11 @@ const Container = styled.div`
     background-color: ${props => (props.isDragging ? 'lightgreen' : 'white')};
 `;
 
-const Option = ({ option, index }) => {
+const Option = ({ option, index, extraStyles }) => {
+    let Container = StyledContainer;
+    if (extraStyles) {
+        Container = styled(StyledContainer)`${extraStyles}`
+    }
     return (
         <Draggable draggableId={option.id} index={index}>
             {(provided, snapshot) => (

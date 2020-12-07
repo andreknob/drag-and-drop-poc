@@ -26,29 +26,26 @@ const WrongAnswerContainer = styled.div`
 
 function Result(props) {
     const {
-        answer = {},
-        showResult,
-        rightAnswer,
+        isAnswered,
+        isAnswerCorrect,
         onCheckResult,
-        onTryAgain
+        onTryAgain,
     } = props;
 
-    if (answer.id == null) {
+    if (!isAnswered) {
         return null;
     }
 
     let evaluatedAnswer = null;
-    if (showResult) {
-        if (answer.id === rightAnswer) {
-            evaluatedAnswer = <span>The answer is correct!</span>;
-        } else {
-            evaluatedAnswer = (
-                <WrongAnswerContainer>
-                      Wrong answer!
-                      <WrongAnswerButton onClick={onTryAgain}>Try again</WrongAnswerButton>
-                  </WrongAnswerContainer>
-            );
-        }
+    if (isAnswerCorrect) {
+        evaluatedAnswer = <span>The answer is correct!</span>;
+    } else if (isAnswerCorrect === false) {
+        evaluatedAnswer = (
+            <WrongAnswerContainer>
+                    Wrong answer!
+                    <WrongAnswerButton onClick={onTryAgain}>Try again</WrongAnswerButton>
+                </WrongAnswerContainer>
+        );
     }
 
     return (

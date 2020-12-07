@@ -22,6 +22,9 @@ const AnswerContainer = styled.div`
     flex-grow: 1;
     min-height: 350px;
     padding: 8px 8px 0px 8px;
+
+    background: url('${process.env.PUBLIC_URL}/strawberry.jpg') no-repeat center;
+    opacity: .9;
 `;
 
 function Answer(props) {
@@ -30,8 +33,7 @@ function Answer(props) {
         title = 'Drag your answer here',
         isDropDisabled,
         isDraggingOption,
-        showResult,
-        rightAnswer
+        isAnswerCorrect
     } = props;
 
     return (
@@ -46,8 +48,7 @@ function Answer(props) {
                             {...provided.droppableProps}>
                             <AnswerDraggable
                                 answer={answer}
-                                showResult={showResult}
-                                rightAnswer={rightAnswer}
+                                isAnswerCorrect={isAnswerCorrect}
                                 isDraggingOption={isDraggingOption}
                                 isDraggingOverDroppable={snapshot.isDraggingOver}
                             />

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 const AnswerDiv = styled.div`
     visibility: ${props => (props.answerId == null || (props.isDraggingOption && props.isDraggingOverDroppable) ? 'hidden' : 'visible')};
-    background-color: ${props => props.showResult ? (props.isRightAnswer ? 'lightgreen' : '#FF9999') : 'white'};
+    background-color: ${props => props.isAnswerCorrect != null ? (props.isAnswerCorrect ? 'lightgreen' : '#FF9999') : 'white'};
     border: 1px solid lightgrey;
     border-radius: 2px;
     padding: 8px;
@@ -16,8 +16,7 @@ const AnswerDiv = styled.div`
 function AnswerDraggable(props) {
     const {
         answer,
-        showResult,
-        rightAnswer,
+        isAnswerCorrect,
         isDraggingOption,
         isDraggingOverDroppable
     } = props;
@@ -31,8 +30,7 @@ function AnswerDraggable(props) {
                     ref={draggableProvided.innerRef}
                     isDraggingOption={isDraggingOption}
                     isDraggingOverDroppable={isDraggingOverDroppable}
-                    showResult={showResult}
-                    isRightAnswer={answer.id === rightAnswer}
+                    isAnswerCorrect={isAnswerCorrect}
                     answerId={answer.id}
                 >
                     {answer.label}

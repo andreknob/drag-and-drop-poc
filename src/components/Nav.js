@@ -17,8 +17,11 @@ function Nav() {
                 <Link to='/'>
                     <li>Home</li>
                 </Link>
-                <Link to='/question'>
-                    <li>Question</li>
+                <Link to='/drag-correct-answer'>
+                    <li>Drag the correct answer</li>
+                </Link>
+                <Link to='/options-sequencing'>
+                    <li>Options sequencing</li>
                 </Link>
             </StyledUl>
         </nav>

@@ -1,12 +1,13 @@
 import React, { useCallback, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import styled from 'styled-components';
+import OptionsColumn from '../../components/OptionsColumn';
 import Answer from './components/Answer';
-import OptionsColumn from './components/OptionsColumn';
-import Result from './components/Result';
+import Option from '../../components/Option';
+import Result from '../../components/Result';
 import { DROPPABLES, OPTIONS } from './Constants';
 
-const RIGHT_ANSWER = 'option_3';
+const CORRECT_ANSWER = 'option_3';
 
 const Container = styled.div`
     display: flex;
@@ -15,12 +16,19 @@ const Container = styled.div`
 const DnDContainer = styled.div`
     display: flex;
 `;
+const OptionsList = styled.div`
+    padding: 8px;
+    transition: background-color 0.2s ease;
+    background-color: ${props => (props.indicateDraggingOver ? 'skyblue' : 'white')};
+    flex-grow: 1;
+    min-height: 100px;
+`;
 
-function Question() {
+function DragCorrectAnswer() {
     const [state, setState] = useState({ options: OPTIONS }); 
     const [startingDroppableId, setStartingDroppableId] = useState();
     const [isDraggingOption, setIsDraggingOption] = useState(false);
-    const [showResult, setShowResult] = useState(false);
+    const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
 
     const handleDragStart = useCallback(({ source }) => {
         setStartingDroppableId(source.droppableId);
@@ -32,7 +40,8 @@ function Question() {
 
     const handleDragEnd = useCallback(({ destination, draggableId }) => {
         setIsDraggingOption(false);
-        setShowResult(false);
+        setIsAnswerCorrect(null);
+        setStartingDroppableId(null);
 
         let answer = {};
         const options = [...state.options];
@@ -57,11 +66,15 @@ function Question() {
     }, [state]);
 
     const handleCheckResult = useCallback(() => {
-        setShowResult(true);
-    }, []);
+        if (state.answer.id === CORRECT_ANSWER) {
+            setIsAnswerCorrect(true);
+        } else {
+            setIsAnswerCorrect(false);
+        }
+    }, [state]);
 
     const handleTryAgain = useCallback(() => {
-        setShowResult(false);
+        setIsAnswerCorrect(null);
 
         const options = [...state.options];
         options.push(state.answer);
@@ -71,6 +84,24 @@ function Question() {
             answer: {},
         });
     }, [state]);
+
+    const renderOptionsList = useCallback((isDropDisabled) => {
+        return (provided, snapshot) => (
+            <OptionsList
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                indicateDraggingOver={snapshot.isDraggingOver && isDropDisabled === false}
+            >
+                {state.options.map((option, index) => <Option key={option.id} option={option} index={index} />)}
+                {provided.placeholder}
+            </OptionsList>
+        );
+    }, [state]);
+
+    let isOptionsColumnDropDisabled;
+    if (startingDroppableId != null) {
+        isOptionsColumnDropDisabled = startingDroppableId === DROPPABLES.OPTIONS_COLUMN;
+    }
     
     return (
         <Container>
@@ -84,17 +115,17 @@ function Question() {
                         answer={state.answer}
                         isDropDisabled={startingDroppableId === DROPPABLES.ANSWER}
                         isDraggingOption={isDraggingOption}
-                        rightAnswer={RIGHT_ANSWER}
-                        showResult={showResult}/>
+                        isAnswerCorrect={isAnswerCorrect}
+                    />
                     <OptionsColumn
-                        options={state.options}
-                        isDropDisabled={startingDroppableId === DROPPABLES.OPTIONS_COLUMN} />
+                        isDropDisabled={isOptionsColumnDropDisabled}>
+                        {renderOptionsList}
+                    </OptionsColumn>
                 </DnDContainer>
             </DragDropContext>
             <Result
-                answer={state.answer}
-                showResult={showResult}
-                rightAnswer={RIGHT_ANSWER}
+                isAnswered={state.answer?.id != null}
+                isAnswerCorrect={isAnswerCorrect}
                 onCheckResult={handleCheckResult}
                 onTryAgain={handleTryAgain}
             />
@@ -102,4 +133,4 @@ function Question() {
     )
 }
 
-export default Question;
+export default DragCorrectAnswer;
