@@ -1,5 +1,5 @@
 import React from 'react';
-import Nav from './components/Nav';
+import Nav from './components/nav/Nav';
 import Home from './screens/home/Home';
 import DragCorrectAnswer from './screens/dragCorrectAnswer/DragCorrectAnswer';
 import OptionsSequencing from './screens/optionsSequencing/OptionsSequencing';

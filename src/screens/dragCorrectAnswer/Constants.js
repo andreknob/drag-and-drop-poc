@@ -1,20 +1,20 @@
 const DROPPABLES = {
     ANSWER: 'answer',
-    OPTIONS_COLUMN: 'optionsColumn'
+    OPTIONS_DROPPABLE: 'optionsDroppable'
 };
 
 const OPTIONS = [
     {
         id: 'option_1',
-        label: 'Option 1'
+        label: 'Orange'
     },
     {
         id: 'option_2',
-        label: 'Option 2'
+        label: 'Apple'
     },
     {
         id: 'option_3',
-        label: 'Option 3'
+        label: 'Strawberry'
     },
 ];
 

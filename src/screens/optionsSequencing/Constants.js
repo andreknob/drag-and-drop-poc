@@ -1,15 +1,15 @@
 const DROPPABLES = {
-    OPTIONS_COLUMN: 'optionsColumn'
+    OPTIONS_DROPPABLE: 'optionsDroppable'
 };
 
 const OPTIONS = [
     {
-        id: 'option_1',
-        label: '1'
-    },
-    {
         id: 'option_2',
         label: '2'
+    },
+    {
+        id: 'option_5',
+        label: '5'
     },
     {
         id: 'option_3',
@@ -20,8 +20,8 @@ const OPTIONS = [
         label: '4'
     },
     {
-        id: 'option_5',
-        label: '5'
+        id: 'option_1',
+        label: '1'
     },
 ];
 

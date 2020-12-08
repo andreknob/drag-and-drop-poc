@@ -1,10 +1,11 @@
 import React, { useCallback, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import styled from 'styled-components';
-import OptionsColumn from '../../components/OptionsColumn';
-import Answer from './components/Answer';
-import Option from '../../components/Option';
-import Result from '../../components/Result';
+import Option from '../../components/dragAndDrop/Option';
+import OptionsDroppable from '../../components/dragAndDrop/OptionsDroppable';
+import OptionsList, { StyledContainer as OptionsListStyledContainer } from '../../components/dragAndDrop/OptionsList';
+import Result from '../../components/result/Result';
+import AnswerDroppable from './components/AnswerDroppable';
 import { DROPPABLES, OPTIONS } from './Constants';
 
 const CORRECT_ANSWER = 'option_3';
@@ -16,32 +17,28 @@ const Container = styled.div`
 const DnDContainer = styled.div`
     display: flex;
 `;
-const OptionsList = styled.div`
-    padding: 8px;
-    transition: background-color 0.2s ease;
-    background-color: ${props => (props.indicateDraggingOver ? 'skyblue' : 'white')};
-    flex-grow: 1;
-    min-height: 100px;
+const OptionsListExtraStyledContainer = styled(OptionsListStyledContainer)`
+    background-color: ${props => props.isDraggingOver && props.isDraggingAnswer ? 'skyblue' : 'white'}
 `;
 
 function DragCorrectAnswer() {
     const [state, setState] = useState({ options: OPTIONS }); 
-    const [startingDroppableId, setStartingDroppableId] = useState();
+    const [isDraggingAnswer, setIsDraggingAnswer] = useState(false);
     const [isDraggingOption, setIsDraggingOption] = useState(false);
     const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
 
     const handleDragStart = useCallback(({ source }) => {
-        setStartingDroppableId(source.droppableId);
-
-        if (source.droppableId === DROPPABLES.OPTIONS_COLUMN) {
+        if (source.droppableId === DROPPABLES.OPTIONS_DROPPABLE) {
             setIsDraggingOption(true);
+        } else {
+            setIsDraggingAnswer(true);
         }
       }, []);
 
     const handleDragEnd = useCallback(({ destination, draggableId }) => {
+        setIsDraggingAnswer(false);
         setIsDraggingOption(false);
         setIsAnswerCorrect(null);
-        setStartingDroppableId(null);
 
         let answer = {};
         const options = [...state.options];
@@ -85,23 +82,16 @@ function DragCorrectAnswer() {
         });
     }, [state]);
 
-    const renderOptionsList = useCallback((isDropDisabled) => {
-        return (provided, snapshot) => (
-            <OptionsList
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                indicateDraggingOver={snapshot.isDraggingOver && isDropDisabled === false}
-            >
-                {state.options.map((option, index) => <Option key={option.id} option={option} index={index} />)}
-                {provided.placeholder}
-            </OptionsList>
-        );
-    }, [state]);
-
-    let isOptionsColumnDropDisabled;
-    if (startingDroppableId != null) {
-        isOptionsColumnDropDisabled = startingDroppableId === DROPPABLES.OPTIONS_COLUMN;
-    }
+    const renderOptionsList = useCallback((provided, snapshot) => (
+        <OptionsList
+            provided={provided}
+            Container={OptionsListExtraStyledContainer}
+            isDraggingOver={snapshot.isDraggingOver}
+            isDraggingAnswer={isDraggingAnswer}
+        >
+            {state.options.map((option, index) => <Option key={option.id} option={option} index={index} />)}
+        </OptionsList>
+    ), [state, isDraggingAnswer]);
     
     return (
         <Container>
@@ -110,17 +100,16 @@ function DragCorrectAnswer() {
                 onDragEnd={handleDragEnd}
             >
                 <DnDContainer>
-                    <Answer
-                        img
+                    <AnswerDroppable
+                        img='strawberry.jpg'
                         answer={state.answer}
-                        isDropDisabled={startingDroppableId === DROPPABLES.ANSWER}
+                        isDropDisabled={isDraggingAnswer}
                         isDraggingOption={isDraggingOption}
                         isAnswerCorrect={isAnswerCorrect}
                     />
-                    <OptionsColumn
-                        isDropDisabled={isOptionsColumnDropDisabled}>
+                    <OptionsDroppable isDropDisabled={isDraggingOption}>
                         {renderOptionsList}
-                    </OptionsColumn>
+                    </OptionsDroppable>
                 </DnDContainer>
             </DragDropContext>
             <Result

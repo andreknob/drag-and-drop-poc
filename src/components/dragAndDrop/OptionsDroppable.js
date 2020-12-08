@@ -15,10 +15,10 @@ const Title = styled.h3`
     padding: 8px;
 `;
 
-function OptionsColumn(props) {
+function OptionsDroppable(props) {
     const {
         title = 'Choose one option from below',
-        droppableId = 'optionsColumn',
+        droppableId = 'optionsDroppable',
         direction = 'vertical',
         isDropDisabled,
         width = 220,
@@ -31,11 +31,12 @@ function OptionsColumn(props) {
             <Droppable
                 droppableId={droppableId}
                 direction={direction}
-                isDropDisabled={isDropDisabled}>
-                {children(isDropDisabled)}
+                isDropDisabled={isDropDisabled}
+            >
+                {children}
             </Droppable>
         </Container>
     );
 }
 
-export default OptionsColumn;
+export default OptionsDroppable;

@@ -26,7 +26,7 @@ const WrongAnswerContainer = styled.div`
 
 function Result(props) {
     const {
-        isAnswered,
+        isAnswered = true,
         isAnswerCorrect,
         onCheckResult,
         onTryAgain,
@@ -42,9 +42,9 @@ function Result(props) {
     } else if (isAnswerCorrect === false) {
         evaluatedAnswer = (
             <WrongAnswerContainer>
-                    Wrong answer!
-                    <WrongAnswerButton onClick={onTryAgain}>Try again</WrongAnswerButton>
-                </WrongAnswerContainer>
+                Wrong answer!
+                <WrongAnswerButton onClick={onTryAgain}>Try again</WrongAnswerButton>
+            </WrongAnswerContainer>
         );
     }
 

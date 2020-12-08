@@ -1,53 +1,69 @@
 import React, { useCallback, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import styled from 'styled-components';
-import OptionsColumn from '../../components/OptionsColumn';
-import Option from '../../components/Option';
-import Result from '../../components/Result';
+import Option, { StyledContainer as OptionStyledContainer } from '../../components/dragAndDrop/Option';
+import OptionsDroppable from '../../components/dragAndDrop/OptionsDroppable';
+import OptionsList, { StyledContainer as OptionsListStyledContainer } from '../../components/dragAndDrop/OptionsList';
+import Result from '../../components/result/Result';
 import { OPTIONS } from './Constants';
 
-const CORRECT_ANSWER = ['option_2', 'option_1', 'option_4', 'option_3', 'option_5'];
+const CORRECT_ANSWER = ['option_1', 'option_2', 'option_3', 'option_4', 'option_5'];
 
 const Container = styled.div`
     display: flex;
     flex-direction: column;
 `;
-const OptionsList = styled.div`
-    display: flex;
 
-    padding: 8px;
-    transition: background-color 0.2s ease;
-    background-color: ${props => props.backgroundColor};
-    flex-grow: 1;
-    min-height: 100px;
+function getBackgroundColor(isDraggingOver, isAnswerCorrect) {
+    if (isDraggingOver) {
+        return 'skyblue';
+    } else if (isAnswerCorrect != null) {
+        if (isAnswerCorrect) {
+            return 'lightgreen';
+        }
+        return '#FF9999';
+    }
+
+    return 'white';
+};
+
+const OptionsListExtraStyledContainer = styled(OptionsListStyledContainer)`
+    display: flex;
+    background-color: ${props => getBackgroundColor(props.isDraggingOver, props.isAnswerCorrect)}
+`;
+
+const OptionExtraStyledContainer = styled(OptionStyledContainer)`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 74px;
+    margin-right: 16px;
+
+    font-size: 36px;
 `;
 
 function OptionsSequencing() {
-    const [state, setState] = useState({ options: OPTIONS });
+    const [options, setOptions] = useState(OPTIONS);
     const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
 
-    const handleDragEnd = useCallback(({ destination, source, draggableId }) => {
+    const handleDragEnd = useCallback(({ destination, source }) => {
         setIsAnswerCorrect(null);
 
         if (!destination || destination.index === source.index) {
           return;
         }
     
-        const options = [...state.options];
+        const newOptions = [...options];
     
-        const spliced = options.splice(source.index, 1)[0];
-        options.splice(destination.index, 0, spliced);
-    
-        const newData = {
-            ...state,
-            options
-        };
+        const spliced = newOptions.splice(source.index, 1)[0];
+        newOptions.splice(destination.index, 0, spliced);
 
-        setState(newData);
-    }, [state]);
+        setOptions(newOptions);
+    }, [options]);
 
     const handleCheckResult = useCallback(() => {
-        const equalsToAnswer = state.options.every((option, index) => {
+        const equalsToAnswer = options.every((option, index) => {
             return option.id === CORRECT_ANSWER[index];
         });
 
@@ -56,71 +72,43 @@ function OptionsSequencing() {
         } else {
             setIsAnswerCorrect(false);
         }
-    }, [state]);
+    }, [options]);
 
     const handleTryAgain = useCallback(() => {
         setIsAnswerCorrect(null);
 
-        setState({
-            ...state,
-            options: OPTIONS,
-        });
-    }, [state]);
+        setOptions(OPTIONS);
+    }, []);
 
-    const getBackgroundColor = useCallback((isDraggingOver) => {
-        if (isDraggingOver) {
-            return 'skyblue';
-        } else if (isAnswerCorrect != null) {
-            if (isAnswerCorrect) {
-                return 'lightgreen';
-            }
-            return '#FF9999';
-        }
-
-        return 'white';
-    }, [isAnswerCorrect]);
-
-    const renderOptionsList = useCallback(() => {
-        const extraStyles = `
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            width: 74px;
-            margin-right: 16px;
-
-            font-size: 36px;
-        `;
-        return (provided, snapshot) => (
-            <OptionsList
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                backgroundColor={getBackgroundColor(snapshot.isDraggingOver)}>
-                {state.options.map((option, index) => (
-                    <Option
-                        key={option.id}
-                        index={index}
-                        extraStyles={extraStyles}
-                        option={option}
-                    />
-                ))}
-                {provided.placeholder}
-            </OptionsList>
-        );
-    }, [state, getBackgroundColor]);
+    const renderOptionsList = useCallback((provided, snapshot) => (
+        <OptionsList
+            provided={provided}
+            Container={OptionsListExtraStyledContainer}
+            isDraggingOver={snapshot.isDraggingOver}
+            isAnswerCorrect={isAnswerCorrect}
+        >
+            {options.map((option, index) => (
+                <Option
+                    key={option.id}
+                    index={index}
+                    option={option}
+                    Container={OptionExtraStyledContainer} />
+            ))}
+        </OptionsList>
+    ), [options, isAnswerCorrect]);
     
     return (
         <Container>
             <DragDropContext onDragEnd={handleDragEnd}>
-                <OptionsColumn
+                <OptionsDroppable
                     title='Reorder the elements below until they are in the right order'
                     width={600}
-                    direction='horizontal'>
+                    direction='horizontal'
+                >
                     {renderOptionsList}
-                </OptionsColumn>
+                </OptionsDroppable>
             </DragDropContext>
             <Result
-                isAnswered
                 isAnswerCorrect={isAnswerCorrect}
                 onCheckResult={handleCheckResult}
                 onTryAgain={handleTryAgain}
