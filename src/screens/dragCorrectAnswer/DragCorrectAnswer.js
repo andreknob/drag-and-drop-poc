@@ -8,6 +8,7 @@ import OptionsList from '../../components/dragAndDrop/OptionsList';
 import Result from '../../components/result/Result';
 import AnswerDroppable from './components/AnswerDroppable';
 import { DROPPABLES, OPTIONS } from './Constants';
+import useWindowResizeEventListener from '../../hooks/useWindowResizeEventListener';
 
 const CORRECT_ANSWER = 'option_3';
 
@@ -29,6 +30,7 @@ function DragCorrectAnswer() {
     const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
 
     const optionsListElement = useRef();
+    const [optionsListElementWidth, setOptionsListElementWidth] = useState();
 
     const handleDragStart = useCallback(({ source }) => {
         if (source.droppableId === DROPPABLES.OPTIONS_DROPPABLE) {
@@ -100,7 +102,13 @@ function DragCorrectAnswer() {
             {state.options.map((option, index) => <Option key={option.id} option={option} index={index} />)}
         </OptionsList>
     ), [state, isDraggingAnswer, setOptionsListRef]);
-    
+
+    const handleWindowResize = useCallback(() => {
+        setOptionsListElementWidth(optionsListElement.current.clientWidth);
+    }, [optionsListElement, setOptionsListElementWidth]);
+
+    useWindowResizeEventListener(handleWindowResize);
+
     return (
         <Container>
             <DragDropContext
@@ -114,7 +122,7 @@ function DragCorrectAnswer() {
                         isDropDisabled={isDraggingAnswer}
                         isDraggingOption={isDraggingOption}
                         isAnswerCorrect={isAnswerCorrect}
-                        optionsListElement={optionsListElement}
+                        optionsListElementWidth={optionsListElementWidth}
                     />
                     <OptionsDroppable isDropDisabled={isDraggingOption}>
                         {renderOptionsList}

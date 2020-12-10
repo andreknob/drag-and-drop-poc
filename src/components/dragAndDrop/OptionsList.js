@@ -21,7 +21,9 @@ function OptionsList(props) {
     const Container = useExtraStyledComponent(StyledContainer, extraStyles);
 
     const setRef = useCallback((ref) => {
-        setOptionsListRef(ref);
+        if (typeof setOptionsListRef === 'function') {
+            setOptionsListRef(ref);
+        }
         provided.innerRef(ref);
     }, [setOptionsListRef, provided]);
 

@@ -35,7 +35,7 @@ function AnswerDroppable(props) {
         isDropDisabled,
         isDraggingOption,
         isAnswerCorrect,
-        optionsListElement
+        optionsListElementWidth
     } = props;
 
     return (
@@ -56,7 +56,7 @@ function AnswerDroppable(props) {
                             isAnswerCorrect={isAnswerCorrect}
                             isDraggingOption={isDraggingOption}
                             isDraggingOverDroppable={snapshot.isDraggingOver}
-                            optionsListElement={optionsListElement}
+                            optionsListElementWidth={optionsListElementWidth}
                         />
                         {provided.placeholder}
                     </DroppableContainer>

@@ -19,7 +19,7 @@ function AnswerDraggable(props) {
         isAnswerCorrect,
         isDraggingOption,
         isDraggingOverDroppable,
-        optionsListElement
+        optionsListElementWidth
     } = props;
 
     return (
@@ -33,7 +33,7 @@ function AnswerDraggable(props) {
                     isDraggingOverDroppable={isDraggingOverDroppable}
                     isAnswerCorrect={isAnswerCorrect}
                     answerId={answer.id}
-                    optionElementWidth={optionsListElement.current?.clientWidth - 34}
+                    optionElementWidth={optionsListElementWidth - 34}
                 >
                     {answer.label}
                 </AnswerDiv>
