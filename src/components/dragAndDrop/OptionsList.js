@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
+import useExtraStyledComponent from '../../hooks/useExtraStyledComponent';
 
 const StyledContainer = styled.div`
     padding: 8px;
@@ -8,17 +9,25 @@ const StyledContainer = styled.div`
     min-height: 100px;
 `;
 
-const OptionsList = (props) => {
+function OptionsList(props) {
     const {
         provided,
-        Container = StyledContainer,
         children,
+        extraStyles,
+        setRef: setOptionsListRef,
         ...extraProps
     } = props;
 
+    const Container = useExtraStyledComponent(StyledContainer, extraStyles);
+
+    const setRef = useCallback((ref) => {
+        setOptionsListRef(ref);
+        provided.innerRef(ref);
+    }, [setOptionsListRef, provided]);
+
     return (
         <Container
-            ref={provided.innerRef}
+            ref={setRef}
             {...provided.droppableProps}
             {...extraProps}
         >
@@ -28,5 +37,4 @@ const OptionsList = (props) => {
     );
 }
 
-export { StyledContainer };
 export default OptionsList;

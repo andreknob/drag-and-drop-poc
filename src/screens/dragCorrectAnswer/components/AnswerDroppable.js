@@ -34,7 +34,8 @@ function AnswerDroppable(props) {
         title = 'Drag your answer here',
         isDropDisabled,
         isDraggingOption,
-        isAnswerCorrect
+        isAnswerCorrect,
+        optionsListElement
     } = props;
 
     return (
@@ -55,6 +56,7 @@ function AnswerDroppable(props) {
                             isAnswerCorrect={isAnswerCorrect}
                             isDraggingOption={isDraggingOption}
                             isDraggingOverDroppable={snapshot.isDraggingOver}
+                            optionsListElement={optionsListElement}
                         />
                         {provided.placeholder}
                     </DroppableContainer>

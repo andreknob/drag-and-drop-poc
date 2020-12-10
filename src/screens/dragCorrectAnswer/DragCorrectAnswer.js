@@ -1,9 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import styled from 'styled-components';
+import templateLiteralsParser from '../../util/templateLiteralsParser';
 import Option from '../../components/dragAndDrop/Option';
 import OptionsDroppable from '../../components/dragAndDrop/OptionsDroppable';
-import OptionsList, { StyledContainer as OptionsListStyledContainer } from '../../components/dragAndDrop/OptionsList';
+import OptionsList from '../../components/dragAndDrop/OptionsList';
 import Result from '../../components/result/Result';
 import AnswerDroppable from './components/AnswerDroppable';
 import { DROPPABLES, OPTIONS } from './Constants';
@@ -17,7 +18,7 @@ const Container = styled.div`
 const DnDContainer = styled.div`
     display: flex;
 `;
-const OptionsListExtraStyledContainer = styled(OptionsListStyledContainer)`
+const optionsListExtraStyles = templateLiteralsParser`
     background-color: ${props => props.isDraggingOver && props.isDraggingAnswer ? 'skyblue' : 'white'}
 `;
 
@@ -26,6 +27,8 @@ function DragCorrectAnswer() {
     const [isDraggingAnswer, setIsDraggingAnswer] = useState(false);
     const [isDraggingOption, setIsDraggingOption] = useState(false);
     const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
+
+    const optionsListElement = useRef();
 
     const handleDragStart = useCallback(({ source }) => {
         if (source.droppableId === DROPPABLES.OPTIONS_DROPPABLE) {
@@ -82,16 +85,21 @@ function DragCorrectAnswer() {
         });
     }, [state]);
 
+    const setOptionsListRef = useCallback((element) => {
+        optionsListElement.current = element
+    }, [optionsListElement]);
+
     const renderOptionsList = useCallback((provided, snapshot) => (
         <OptionsList
+            setRef={setOptionsListRef}
             provided={provided}
-            Container={OptionsListExtraStyledContainer}
+            extraStyles={optionsListExtraStyles}
             isDraggingOver={snapshot.isDraggingOver}
             isDraggingAnswer={isDraggingAnswer}
         >
             {state.options.map((option, index) => <Option key={option.id} option={option} index={index} />)}
         </OptionsList>
-    ), [state, isDraggingAnswer]);
+    ), [state, isDraggingAnswer, setOptionsListRef]);
     
     return (
         <Container>
@@ -106,6 +114,7 @@ function DragCorrectAnswer() {
                         isDropDisabled={isDraggingAnswer}
                         isDraggingOption={isDraggingOption}
                         isAnswerCorrect={isAnswerCorrect}
+                        optionsListElement={optionsListElement}
                     />
                     <OptionsDroppable isDropDisabled={isDraggingOption}>
                         {renderOptionsList}

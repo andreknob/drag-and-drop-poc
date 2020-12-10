@@ -9,7 +9,7 @@ const AnswerDiv = styled.div`
     border-radius: 2px;
     padding: 8px;
     min-height: 20px;
-    width: 186px;
+    width: ${props => props.optionElementWidth}px;
     margin-bottom: 8px;
 `;
 
@@ -18,7 +18,8 @@ function AnswerDraggable(props) {
         answer,
         isAnswerCorrect,
         isDraggingOption,
-        isDraggingOverDroppable
+        isDraggingOverDroppable,
+        optionsListElement
     } = props;
 
     return (
@@ -32,6 +33,7 @@ function AnswerDraggable(props) {
                     isDraggingOverDroppable={isDraggingOverDroppable}
                     isAnswerCorrect={isAnswerCorrect}
                     answerId={answer.id}
+                    optionElementWidth={optionsListElement.current?.clientWidth - 34}
                 >
                     {answer.label}
                 </AnswerDiv>

@@ -1,9 +1,10 @@
 import React, { useCallback, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import styled from 'styled-components';
-import Option, { StyledContainer as OptionStyledContainer } from '../../components/dragAndDrop/Option';
+import templateLiteralsParser from '../../util/templateLiteralsParser';
+import Option from '../../components/dragAndDrop/Option';
 import OptionsDroppable from '../../components/dragAndDrop/OptionsDroppable';
-import OptionsList, { StyledContainer as OptionsListStyledContainer } from '../../components/dragAndDrop/OptionsList';
+import OptionsList from '../../components/dragAndDrop/OptionsList';
 import Result from '../../components/result/Result';
 import { OPTIONS } from './Constants';
 
@@ -27,12 +28,12 @@ function getBackgroundColor(isDraggingOver, isAnswerCorrect) {
     return 'white';
 };
 
-const OptionsListExtraStyledContainer = styled(OptionsListStyledContainer)`
+const optionsListExtraStyles = templateLiteralsParser`
     display: flex;
     background-color: ${props => getBackgroundColor(props.isDraggingOver, props.isAnswerCorrect)}
 `;
 
-const OptionExtraStyledContainer = styled(OptionStyledContainer)`
+const optionExtraStyles = templateLiteralsParser`
     display: flex;
     justify-content: center;
     align-items: center;
@@ -83,7 +84,7 @@ function OptionsSequencing() {
     const renderOptionsList = useCallback((provided, snapshot) => (
         <OptionsList
             provided={provided}
-            Container={OptionsListExtraStyledContainer}
+            extraStyles={optionsListExtraStyles}
             isDraggingOver={snapshot.isDraggingOver}
             isAnswerCorrect={isAnswerCorrect}
         >
@@ -92,7 +93,7 @@ function OptionsSequencing() {
                     key={option.id}
                     index={index}
                     option={option}
-                    Container={OptionExtraStyledContainer} />
+                    extraStyles={optionExtraStyles} />
             ))}
         </OptionsList>
     ), [options, isAnswerCorrect]);

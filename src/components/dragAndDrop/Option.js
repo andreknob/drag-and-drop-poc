@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Draggable } from 'react-beautiful-dnd'
+import { Draggable } from 'react-beautiful-dnd';
+import useExtraStyledComponent from '../../hooks/useExtraStyledComponent';
 
 const StyledContainer = styled.div`
     border: 1px solid lightgrey;
@@ -10,20 +11,23 @@ const StyledContainer = styled.div`
     background-color: ${props => (props.isDragging ? 'lightgreen' : 'white')};
 `;
 
-const Option = ({ option, index, Container = StyledContainer }) => (
-    <Draggable draggableId={option.id} index={index}>
-        {(provided, snapshot) => (
-            <Container
-                {...provided.draggableProps}
-                {...provided.dragHandleProps}
-                ref={provided.innerRef}
-                isDragging={snapshot.isDragging}
-            >
-                {option.label}
-            </Container>
-        )}
-    </Draggable>
-);
+const Option = ({ option, index, extraStyles }) => {
+    const Container = useExtraStyledComponent(StyledContainer, extraStyles);
 
-export { StyledContainer };
+    return (
+        <Draggable draggableId={option.id} index={index}>
+            {(provided, snapshot) => (
+                <Container
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    ref={provided.innerRef}
+                    isDragging={snapshot.isDragging}
+                >
+                    {option.label}
+                </Container>
+            )}
+        </Draggable>
+    );
+}
+
 export default Option;
