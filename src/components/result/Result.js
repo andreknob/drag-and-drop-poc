@@ -2,8 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const ResultContainer = styled.div`
-    margin-left: 8px;
-    width: 500px;
+    margin: 8px;
 
     display: flex;
     justify-content: space-between;

@@ -6,7 +6,6 @@ const Container = styled.div`
     margin: 8px;
     border: 1px solid lightgrey;
     border-radius: 2px;
-    width: ${props => props.width}px;
 
     display: flex;
     flex-direction: column;
@@ -21,12 +20,11 @@ function OptionsDroppable(props) {
         droppableId = 'optionsDroppable',
         direction = 'vertical',
         isDropDisabled,
-        width = 220,
         children
     } = props;
 
     return (
-        <Container width={width}>
+        <Container>
             <Title>{title}</Title>
             <Droppable
                 droppableId={droppableId}

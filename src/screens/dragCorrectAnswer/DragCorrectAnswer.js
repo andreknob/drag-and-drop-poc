@@ -2,25 +2,25 @@ import React, { useCallback, useRef, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import templateLiteralsParser from '../../util/templateLiteralsParser';
+import useWindowResizeEventListener from '../../hooks/useWindowResizeEventListener';
 import Option from '../../components/dragAndDrop/Option';
 import OptionsDroppable from '../../components/dragAndDrop/OptionsDroppable';
 import OptionsList from '../../components/dragAndDrop/OptionsList';
 import Result from '../../components/result/Result';
 import AnswerDroppable from './components/AnswerDroppable';
 import { DROPPABLES, OPTIONS } from './Constants';
-import useWindowResizeEventListener from '../../hooks/useWindowResizeEventListener';
 
 const CORRECT_ANSWER = 'option_3';
 
 const Container = styled.div`
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
 `;
 const DnDContainer = styled.div`
     display: flex;
 `;
 const optionsListExtraStyles = templateLiteralsParser`
-    background-color: ${props => props.isDraggingOver && props.isDraggingAnswer ? 'skyblue' : 'white'}
+    background-color: ${props => props.isDraggingOver && props.isDraggingAnswer ? 'skyblue' : 'white'};
 `;
 
 function DragCorrectAnswer() {

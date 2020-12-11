@@ -11,7 +11,7 @@ import { OPTIONS } from './Constants';
 const CORRECT_ANSWER = ['option_1', 'option_2', 'option_3', 'option_4', 'option_5'];
 
 const Container = styled.div`
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
 `;
 
@@ -30,7 +30,9 @@ function getBackgroundColor(isDraggingOver, isAnswerCorrect) {
 
 const optionsListExtraStyles = templateLiteralsParser`
     display: flex;
-    background-color: ${props => getBackgroundColor(props.isDraggingOver, props.isAnswerCorrect)}
+    justify-content: space-between;
+    background-color: ${props => getBackgroundColor(props.isDraggingOver, props.isAnswerCorrect)};
+    padding: 8px 0 8px 12px;
 `;
 
 const optionExtraStyles = templateLiteralsParser`
@@ -38,10 +40,9 @@ const optionExtraStyles = templateLiteralsParser`
     justify-content: center;
     align-items: center;
 
-    width: 74px;
-    margin-right: 16px;
-
+    flex-grow: 1;
     font-size: 36px;
+    margin-right: 16px;
 `;
 
 function OptionsSequencing() {
@@ -103,7 +104,6 @@ function OptionsSequencing() {
             <DragDropContext onDragEnd={handleDragEnd}>
                 <OptionsDroppable
                     title='Reorder the elements below until they are in the right order'
-                    width={600}
                     direction='horizontal'
                 >
                     {renderOptionsList}

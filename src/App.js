@@ -3,6 +3,7 @@ import Nav from './components/nav/Nav';
 import Home from './screens/home/Home';
 import DragCorrectAnswer from './screens/dragCorrectAnswer/DragCorrectAnswer';
 import OptionsSequencing from './screens/optionsSequencing/OptionsSequencing';
+import Test from './screens/Test';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
                 <Route path="/" exact component={Home} />
                 <Route path="/drag-correct-answer" component={DragCorrectAnswer} />
                 <Route path="/options-sequencing" component={OptionsSequencing} />
+                <Route path="/test" component={Test} />
             </Switch>
         </Router>
     );
