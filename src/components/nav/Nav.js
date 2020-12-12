@@ -23,6 +23,9 @@ function Nav() {
                 <Link to='/options-sequencing'>
                     <li>Options sequencing</li>
                 </Link>
+                <Link to='/match-list'>
+                    <li>Match list</li>
+                </Link>
             </StyledUl>
         </nav>
     )
