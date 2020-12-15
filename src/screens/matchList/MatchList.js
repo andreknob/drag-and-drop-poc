@@ -1,13 +1,13 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import styled from 'styled-components';
-import templateLiteralsParser from '../../util/templateLiteralsParser';
 import Option from '../../components/dragAndDrop/Option';
 import OptionsDroppable from '../../components/dragAndDrop/OptionsDroppable';
 import OptionsList from '../../components/dragAndDrop/OptionsList';
 import Result from '../../components/result/Result';
 import MatchListBoard from './components/MatchListBoard';
-import { OPTIONS, STATIC_LIST } from './Constants';
+import CONSTANTS from './Constants';
+import EXTRA_STYLES from './ExtraStyles';
 
 // const CORRECT_ANSWER = ['option_1', 'option_2', 'option_3', 'option_4', 'option_5'];
 
@@ -15,43 +15,69 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
 
-    width: 700px;
-`;
-
-function getBackgroundColor(isDraggingOver, isAnswerCorrect) {
-    if (isDraggingOver) {
-        return 'skyblue';
-    } else if (isAnswerCorrect != null) {
-        if (isAnswerCorrect) {
-            return 'lightgreen';
-        }
-        return '#FF9999';
-    }
-
-    return 'white';
-};
-
-const optionsListExtraStyles = templateLiteralsParser`
-    display: flex;
-    justify-content: space-between;
-    background-color: ${props => getBackgroundColor(props.isDraggingOver, props.isAnswerCorrect)};
-    padding: 8px 0 8px 12px;
-`;
-
-const optionExtraStyles = templateLiteralsParser`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    flex-grow: 1;
-    font-size: 36px;
-    margin-right: 16px;
+    width: 100%;
+    max-width: 800px;
 `;
 
 function MatchList() {
-    const [options, setOptions] = useState(OPTIONS);
-    const [answers, setAnswers] = useState([{id: 'answer_1', label: 'New York'}, {id: 'answer_2', label: 'Sydney'}, {id: 'answer_3', label: 'Berlim'}, {id: 'answer_4', label: 'Madrid'}]);
+    const [options, setOptions] = useState(CONSTANTS.OPTIONS);
+    const [answers, setAnswers] = useState(CONSTANTS.ANSWERS);
     const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
+
+    const answerListElement = useRef();
+
+    const swapAnswerToAnswer = useCallback((destination, source) => {
+        const sourceIndex = answers.findIndex(item => source.droppableId.includes(item.id));
+        const destinationIndex = answers.findIndex(item => destination.droppableId.includes(item.id));
+    
+        const newAnswers = [...answers];
+        const newOptions = [...options];
+    
+        if (!answers[destinationIndex].id.includes('no-option')) {
+            newOptions.push(answers[destinationIndex]);
+        }
+        newAnswers[destinationIndex] = answers[sourceIndex];
+        newAnswers[sourceIndex] = { id: `no-option_${sourceIndex}` };
+    
+        setAnswers(newAnswers);
+        setOptions(newOptions);
+    }, [answers, options, setAnswers, setOptions]);
+
+    const swapAnswerToOption = useCallback((source) => {
+        const sourceIndex = answers.findIndex(item => source.droppableId.includes(item.id));
+    
+        const newAnswers = [...answers];
+        const newOptions = [...options];
+    
+        newOptions.push(answers[sourceIndex]);
+
+        newAnswers[sourceIndex] = { id: `no-option_${sourceIndex}` };
+    
+        setAnswers(newAnswers);
+        setOptions(newOptions);
+    }, [answers, options, setAnswers, setOptions]);
+
+    const swapOptionToAnswer = useCallback((destination, source) => {
+        const newOptions = [...options];
+        const spliced = newOptions.splice(source.index, 1)[0];
+    
+        const newAnswers = [...answers];
+        const destinationIndex = answers.findIndex(item => destination.droppableId.includes(item.id));
+
+        newAnswers[destinationIndex] = spliced;
+    
+        setAnswers(newAnswers);
+        setOptions(newOptions);
+    }, [answers, options, setAnswers, setOptions]);
+
+    const swapOptionToOption = useCallback((destination, source) => {
+        const newOptions = [...options];
+    
+        const spliced = newOptions.splice(source.index, 1)[0];
+        newOptions.splice(destination.index, 0, spliced);
+
+        setOptions(newOptions);
+    }, [options, setOptions]);
 
     const handleDragEnd = useCallback(({ destination, source }) => {
         setIsAnswerCorrect(null);
@@ -60,31 +86,24 @@ function MatchList() {
           return;
         }
         
-        if (destination.droppableId.includes('droppable_answer_')) {
-         
-            if (source.droppableId.includes('droppable_answer_')) {
-                const sourceIndex = answers.findIndex(item => source.droppableId.includes(item.id));
-                const destinationIndex = answers.findIndex(item => destination.droppableId.includes(item.id));
-
-                const newAnswers = [...answers];
-
-                const destinationAux = answers[destinationIndex];
-                newAnswers[destinationIndex] = answers[sourceIndex];
-                newAnswers[sourceIndex] = destinationAux;
-
-                setAnswers(newAnswers);
+        if (source.droppableId === CONSTANTS.DROPPABLES.OPTIONS) {
+            if (destination.droppableId === CONSTANTS.DROPPABLES.OPTIONS) {
+                swapOptionToOption(destination, source);
+                return;
             }
 
+            swapOptionToAnswer(destination, source);
+            return ;
+        }
+
+        if (destination.droppableId !== CONSTANTS.DROPPABLES.OPTIONS) {
+            swapAnswerToAnswer(destination, source);
             return;
         }
 
-        const newOptions = [...options];
+        swapAnswerToOption(source);
     
-        const spliced = newOptions.splice(source.index, 1)[0];
-        newOptions.splice(destination.index, 0, spliced);
-
-        setOptions(newOptions);
-    }, [answers, options]);
+    }, [swapAnswerToAnswer, swapAnswerToOption, swapOptionToAnswer, swapOptionToOption]);
 
     const handleCheckResult = useCallback(() => {
 
@@ -93,13 +112,13 @@ function MatchList() {
     const handleTryAgain = useCallback(() => {
         setIsAnswerCorrect(null);
 
-        setOptions(OPTIONS);
+        setOptions(CONSTANTS.OPTIONS);
     }, []);
 
     const renderOptionsList = useCallback((provided, snapshot) => (
         <OptionsList
             provided={provided}
-            extraStyles={optionsListExtraStyles}
+            extraStyles={EXTRA_STYLES.OPTIONS_LIST}
             isDraggingOver={snapshot.isDraggingOver}
             isAnswerCorrect={isAnswerCorrect}
         >
@@ -108,7 +127,8 @@ function MatchList() {
                     key={option.id}
                     index={index}
                     option={option}
-                    extraStyles={optionExtraStyles} />
+                    answerItemWidth={answerListElement.current?.clientWidth - 16}
+                    extraStyles={EXTRA_STYLES.OPTION} />
             ))}
         </OptionsList>
     ), [options, isAnswerCorrect]);
@@ -116,10 +136,10 @@ function MatchList() {
     return (
         <Container>
             <DragDropContext onDragEnd={handleDragEnd}>
-                <MatchListBoard staticList={STATIC_LIST} answerList={answers} />
+                <MatchListBoard staticList={CONSTANTS.STATIC_LIST} answerList={answers} innerRef={answerListElement} />
                 <OptionsDroppable
-                    title=''
-                    direction='horizontal'
+                    title='Options'
+                    direction={'horizontal'}
                 >
                     {renderOptionsList}
                 </OptionsDroppable>

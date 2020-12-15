@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import AnswerDroppable from './AnswerDroppable';
+import CONSTANTS from '../Constants';
 
 const Container = styled.div`
     display: flex;
@@ -23,13 +24,13 @@ const List = styled.div`
     padding: 8px;
 `;
 
-
-function AnswerList({ staticList, answerList }) {
+function AnswerList({ answerList, innerRef }) {
+    const { ANSWERS } = CONSTANTS.DROPPABLES;
     return (
         <Container>
             <Title>Answer list</Title>
-            <List>
-                {answerList.map((item, index) => (<AnswerDroppable key={item.id} index={index} answer={item} />))}
+            <List ref={innerRef}>
+                {Object.keys(ANSWERS).map((item, index) => (<AnswerDroppable key={item.id} index={index} answer={item} />))}
             </List>
         </Container>
     );

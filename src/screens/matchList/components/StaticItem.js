@@ -4,12 +4,12 @@ import styled from 'styled-components';
 const Container = styled.div`
     display: flex;
 
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 `;
 const Item = styled.div`
     border: 1px solid lightgray;
     border-radius: 2px;
-    padding: 8px;
+    padding: 12px;
 
     flex-grow: 1;
 `;
@@ -25,7 +25,6 @@ function StaticItem({ item }) {
         <Container>
             <Item>{item.label}</Item>
         </Container>
-
     );
 }
 

@@ -5,7 +5,7 @@ import AnswerDraggable from './AnswerDraggable';
 import useWindowResizeEventListener from '../../../hooks/useWindowResizeEventListener';
 
 const Container = styled.div`
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 
     display: flex;
     flex-direction: column;
@@ -15,17 +15,19 @@ const DroppableContainer = styled.div`
     max-height: ${props => props.answerDraggableSize?.height + 2}px;
     overflow: hidden;
     position: relative;
-    background-color: skyblue;
+    background-color: ${props => props.highlightBackground ? 'skyblue' : 'initial'};
+    transition: background-color 0.2s ease;
+    min-height: 46px;
 
     &:after {
         content: '';
         position: absolute;
         top: 0px;
         left: 0px;
-        border: 1px dashed lightgray;
+        border: 2px dashed lightgray;
         border-radius: 2px;
-        width: ${props => props.answerDraggableSize?.width}px;
-        height: ${props => props.answerDraggableSize?.height}px;
+        width: ${props => props.answerDraggableSize?.width - 2}px;
+        height: ${props => props.answerDraggableSize?.height - 2}px;
         z-index: -1000;
     }
 `;
@@ -40,7 +42,7 @@ function AnswerDroppable(props) {
     const answerDraggableElement = useRef();
     const [answerDraggableSize, setAnswerDraggableSize] = useState();
 
-    const draggableId = useMemo(() => `draggable_${answer.id}`, [answer]);
+    const draggableId = useMemo(() => answer.id, [answer]);
 
     const setAnswerDraggableRef = useCallback((element) => {
         answerDraggableElement.current = element
@@ -56,8 +58,8 @@ function AnswerDroppable(props) {
     useWindowResizeEventListener(handleWindowResize);
 
     const renderChildren = useCallback((provided, snapshot) => {
-        const isForeignDraggableDraggingOver = snapshot.isDraggingOver && snapshot.draggingOverWith !== draggableId; 
-        const placeholder = isForeignDraggableDraggingOver ? null : provided.placeholder;
+        const isForeignDraggableDraggingOver = snapshot.isDraggingOver && snapshot.draggingOverWith !== answer.id; 
+
         return (
             <DroppableContainer
                 ref={provided.innerRef}
@@ -70,16 +72,24 @@ function AnswerDroppable(props) {
                     setAnswerDraggableRef={setAnswerDraggableRef}
                     isAnswerCorrect={isAnswerCorrect}
                     draggableId={draggableId}
+                    isForeignDraggableDraggingOver={isForeignDraggableDraggingOver}
                 />
-                {placeholder}
+                {provided.placeholder}
             </DroppableContainer>
         );
-    }, [answer, draggableId, isAnswerCorrect, answerDraggableSize, setAnswerDraggableRef]);
+    }, [
+        answer,
+        draggableId,
+        isAnswerCorrect,
+        answerDraggableSize,
+        setAnswerDraggableRef
+    ]);
 
     return (
         <Container>
             <Droppable
                 droppableId={`droppable_${answer.id}`}
+                direction={'horizontal'}
                 isDropDisabled={isDropDisabled}
                 isCombineEnabled
             >

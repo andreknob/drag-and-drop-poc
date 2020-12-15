@@ -7,16 +7,18 @@ const Container = styled.div`
     display: flex;
 
     border: 1px solid lightgray;
-    padding: 8px;
+    padding: 12px;
     margin: 8px;
 `;
 
-function MatchListBoard({ staticList, answerList }) {
+function MatchListBoard({ staticList, answerList, innerRef }) {
 
     return (
         <Container>
             <StaticList list={staticList} />
-            <AnswerList staticList={staticList} answerList={answerList}></AnswerList>
+            <AnswerList
+                innerRef={innerRef}
+                answerList={answerList} />
         </Container>
     );
 }

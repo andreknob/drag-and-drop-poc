@@ -62,7 +62,9 @@ function Test() {
 
     const [options, setOptions] = useState(OPTIONS);
 
-    const handleDragEnd = useCallback(({ destination, source }) => {
+    const handleDragEnd = useCallback(({ destination, source, combine }) => {
+
+        console.log(combine);
         if (!destination) {
           return;
         }

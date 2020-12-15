@@ -11,20 +11,13 @@ const Container = styled.div`
     background-color: ${props => (props.isDragging ? 'lightgreen' : 'white')};
 `;
 
-function getStyle(style, snapshot) {
-    if (!snapshot.isDragging) return {};
-    if (!snapshot.isDropAnimating) {
-      return style;
-    }
-  
-    return {
-      ...style,
-      // cannot be 0, but make it super tiny
-      transitionDuration: `0.001s`
-    };
-  }
-
-const Option = ({ option, index, extraStyles }) => {
+const Option = (props) => {
+    const {
+        option,
+        index,
+        extraStyles,
+        ...extraProps
+    } = props;
     const StyledContainer = useExtraStyledComponent(Container, extraStyles);
 
     return (
@@ -35,6 +28,8 @@ const Option = ({ option, index, extraStyles }) => {
                     {...provided.dragHandleProps}
                     ref={provided.innerRef}
                     isDragging={snapshot.isDragging}
+                    draggingOver={snapshot.draggingOver}
+                    {...extraProps}
                 >
                     {option.label}
                 </StyledContainer>

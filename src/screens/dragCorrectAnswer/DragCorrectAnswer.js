@@ -18,6 +18,7 @@ const Container = styled.div`
 `;
 const DnDContainer = styled.div`
     display: flex;
+    flex-wrap: wrap;
 `;
 const optionsListExtraStyles = templateLiteralsParser`
     background-color: ${props => props.isDraggingOver && props.isDraggingAnswer ? 'skyblue' : 'white'};

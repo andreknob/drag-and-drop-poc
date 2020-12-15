@@ -9,10 +9,6 @@ const Container = styled.div`
     min-height: 100px;
 `;
 
-const PlaceholderSpan = styled.span`
-    display: none;
-`;
-
 function OptionsList(props) {
     const {
         provided,
