@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Droppable } from 'react-beautiful-dnd';
+import useExtraStyledComponent from '../../hooks/useExtraStyledComponent';
 
 const Container = styled.div`
     margin: 8px;
@@ -10,7 +11,6 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
 `;
-
  
 const Title = styled.h3`
     padding: 8px;
@@ -22,20 +22,25 @@ function OptionsDroppable(props) {
         droppableId = 'optionsDroppable',
         direction = 'vertical',
         isDropDisabled,
+        extraStyles,
+        isCombineEnabled,
         children
     } = props;
 
+    const StyledContainer = useExtraStyledComponent(Container, extraStyles);
+
     return (
-        <Container>
+        <StyledContainer>
             <Title>{title}</Title>
             <Droppable
                 droppableId={droppableId}
                 direction={direction}
                 isDropDisabled={isDropDisabled}
+                isCombineEnabled={isCombineEnabled}
             >
                 {children}
             </Droppable>
-        </Container>
+        </StyledContainer>
     );
 }
 

@@ -1,56 +1,68 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
 const AnswerDiv = styled.div`
-    visibility: ${props => (props.answerId == null || (props.isDraggingOption && props.isDraggingOverDroppable) ? 'hidden' : 'visible')};
+    display: ${props => props.hideDraggable ? 'none' : 'block'};
     background-color: ${props => props.isAnswerCorrect != null ? (props.isAnswerCorrect ? 'lightgreen' : '#FF9999') : 'white'};
     border: 1px solid lightgrey;
     border-radius: 2px;
     padding: 8px;
-
-    flex-grow: 1;
-
-
-
-
+    opacity: 0.7;
+    && {
+        transition-duration: 0.001s;
+    }
 `;
 
-/*
-    position: fixed;
-    top: 78.9271px;
-    left: 376.625px;
-    box-sizing: border-box;
-    width: 306.375px;
-    height: 38px;
-    transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1) 0s;
-    z-index: 5000;
-    pointer-events: none;
-    transform: translate(62px, 63px);
-*/
+function Answer(props) {
+    const {
+        provided,
+        setAnswerDraggableRef,
+        hideDraggable,
+        isAnswerCorrect,
+        children 
+    } = props;
+
+    const setRef = useCallback((ref) => {
+        if (typeof setAnswerDraggableRef === 'function') {
+            setAnswerDraggableRef(ref);
+        }
+        provided.innerRef(ref);
+    }, [setAnswerDraggableRef, provided]);
+
+    return (
+        <AnswerDiv
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            ref={setRef}
+            hideDraggable={hideDraggable}
+            isAnswerCorrect={isAnswerCorrect}
+        >
+            {children}
+        </AnswerDiv>
+    );
+}
 
 function AnswerDraggable(props) {
     const {
         answer,
+        draggableId,
+        setAnswerDraggableRef,
         isAnswerCorrect,
-        isDraggingOption,
-        isDraggingOverDroppable,
+        hideDraggable,
     } = props;
 
     return (
-        <Draggable draggableId={answer.id ? answer.id : 'no-option'} index={0}>
-            {(draggableProvided) => (
-                <AnswerDiv
-                    {...draggableProvided.draggableProps}
-                    {...draggableProvided.dragHandleProps}
-                    ref={draggableProvided.innerRef}
-                    isDraggingOption={isDraggingOption}
-                    isDraggingOverDroppable={isDraggingOverDroppable}
+        <Draggable draggableId={draggableId} index={0}>
+            {(provided) => (
+                <Answer
+                    provided={provided}
+                    setAnswerDraggableRef={setAnswerDraggableRef}
+                    hideDraggable={hideDraggable}
                     isAnswerCorrect={isAnswerCorrect}
-                    answerId={answer.id}
                 >
                     {answer.label}
-                </AnswerDiv>
+                </Answer>
             )}
         </Draggable>
     );

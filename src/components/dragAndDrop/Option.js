@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Draggable } from 'react-beautiful-dnd';
 import useExtraStyledComponent from '../../hooks/useExtraStyledComponent';
 
-const StyledContainer = styled.div`
+const Container = styled.div`
     border: 1px solid lightgrey;
     border-radius: 2px;
     padding: 8px;
@@ -11,20 +11,33 @@ const StyledContainer = styled.div`
     background-color: ${props => (props.isDragging ? 'lightgreen' : 'white')};
 `;
 
+function getStyle(style, snapshot) {
+    if (!snapshot.isDragging) return {};
+    if (!snapshot.isDropAnimating) {
+      return style;
+    }
+  
+    return {
+      ...style,
+      // cannot be 0, but make it super tiny
+      transitionDuration: `0.001s`
+    };
+  }
+
 const Option = ({ option, index, extraStyles }) => {
-    const Container = useExtraStyledComponent(StyledContainer, extraStyles);
+    const StyledContainer = useExtraStyledComponent(Container, extraStyles);
 
     return (
         <Draggable draggableId={option.id} index={index}>
             {(provided, snapshot) => (
-                <Container
+                <StyledContainer
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                     ref={provided.innerRef}
                     isDragging={snapshot.isDragging}
                 >
                     {option.label}
-                </Container>
+                </StyledContainer>
             )}
         </Draggable>
     );

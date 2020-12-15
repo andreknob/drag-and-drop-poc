@@ -60,11 +60,11 @@ function MatchList() {
           return;
         }
         
-        if (destination.droppableId.includes('answer_')) {
+        if (destination.droppableId.includes('droppable_answer_')) {
          
-            if (source.droppableId.includes('answer_')) {
-                const sourceIndex = source.droppableId.split('_')[1];
-                const destinationIndex = destination.droppableId.split('_')[1];
+            if (source.droppableId.includes('droppable_answer_')) {
+                const sourceIndex = answers.findIndex(item => source.droppableId.includes(item.id));
+                const destinationIndex = answers.findIndex(item => destination.droppableId.includes(item.id));
 
                 const newAnswers = [...answers];
 

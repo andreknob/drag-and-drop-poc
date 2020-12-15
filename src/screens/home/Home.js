@@ -7,6 +7,8 @@ import Column from './components/Column';
 
 const Container = styled.div`
   display: flex;
+  width: 90%;
+  max-width: 900px;
 `;
 
 const Home = () => {

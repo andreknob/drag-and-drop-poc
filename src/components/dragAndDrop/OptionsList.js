@@ -2,11 +2,15 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import useExtraStyledComponent from '../../hooks/useExtraStyledComponent';
 
-const StyledContainer = styled.div`
+const Container = styled.div`
     padding: 8px;
     transition: background-color 0.2s ease;
     flex-grow: 1;
     min-height: 100px;
+`;
+
+const PlaceholderSpan = styled.span`
+    display: none;
 `;
 
 function OptionsList(props) {
@@ -18,7 +22,7 @@ function OptionsList(props) {
         ...extraProps
     } = props;
 
-    const Container = useExtraStyledComponent(StyledContainer, extraStyles);
+    const StyledContainer = useExtraStyledComponent(Container, extraStyles);
 
     const setRef = useCallback((ref) => {
         if (typeof setOptionsListRef === 'function') {
@@ -28,14 +32,14 @@ function OptionsList(props) {
     }, [setOptionsListRef, provided]);
 
     return (
-        <Container
+        <StyledContainer
             ref={setRef}
             {...provided.droppableProps}
             {...extraProps}
         >
             {children}
             {provided.placeholder}
-        </Container>
+        </StyledContainer>
     );
 }
 

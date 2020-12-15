@@ -6,7 +6,7 @@ const Container = styled.div`
 
     margin-bottom: 8px;
 `;
-const ItemContainer = styled.div`
+const Item = styled.div`
     border: 1px solid lightgray;
     border-radius: 2px;
     padding: 8px;
@@ -22,7 +22,9 @@ const Separator = styled.div`
 function StaticItem({ item }) {
 
     return (
-        <ItemContainer>{item.label}</ItemContainer>
+        <Container>
+            <Item>{item.label}</Item>
+        </Container>
 
     );
 }

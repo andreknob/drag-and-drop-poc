@@ -8,29 +8,40 @@ const STATIC_LIST = [
         id: 'item_1',
         label: 'Australia'
     },
-
-]
+    {
+        id: 'item_2',
+        label: 'Spain'
+    },
+    {
+        id: 'item_3',
+        label: 'Germany'
+    },
+    {
+        id: 'item_4',
+        label: 'U.S.A.'
+    },
+];
 
 const OPTIONS = [
     {
         id: 'option_2',
-        label: '2'
+        label: 'Madrid'
     },
     {
         id: 'option_5',
-        label: '5'
+        label: 'Rio de Janeiro'
     },
     {
         id: 'option_3',
-        label: '3'
+        label: 'Sydney'
     },
     {
         id: 'option_4',
-        label: '4'
+        label: 'New York'
     },
     {
         id: 'option_1',
-        label: '1'
+        label: 'Berlim'
     },
 ];
 

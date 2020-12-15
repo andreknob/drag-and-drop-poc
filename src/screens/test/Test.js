@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { DragDropContext } from 'react-beautiful-dnd';
 
@@ -6,69 +6,81 @@ import Option from '../../components/dragAndDrop/Option';
 import OptionsDroppable from '../../components/dragAndDrop/OptionsDroppable';
 import OptionsList from '../../components/dragAndDrop/OptionsList';
 import templateLiteralsParser from '../../util/templateLiteralsParser';
+import StaticList from '../matchList/components/StaticList';
+
+const STATIC_LIST = [
+    {
+        id: 'item_1',
+        label: 'Australia'
+    },
+    {
+        id: 'item_2',
+        label: 'U.S.A'
+    },
+    {
+        id: 'item_3',
+        label: 'Germany'
+    },
+    {
+        id: 'item_4',
+        label: 'Spain'
+    },
+];
+
+const OPTIONS = [
+    {
+        id: 'option_1_2',
+        label: '2'
+    },
+    {
+        id: 'option_1_3',
+        label: '3'
+    },
+    {
+        id: 'option_1_4',
+        label: '4'
+    },
+    {
+        id: 'option_1_1',
+        label: '1'
+    },
+];
 
 const Container = styled.div`
     display: flex;
-`;
-const Container1 = styled.div`
-    display: flex;
-    flex-direction: column;
+
+    width: 80%;
+    max-width: 900px;
 `;
 
-const Container2 = styled.div`
-    display: flex;
-`;
-
-const Container3 = styled.div`
-    display: flex;
-    border: 4px solid green;
-    padding: 8px;
-    min-width: 0;
-`;
-const Item = styled.div`
-    position: relative;
-    margin-right: 10px;
-    border: 2px solid blue;
-    padding: 42px;
-    min-width: 0;
-
-    &:after {
-        content: '';
-        position: absolute;
-        top: 37px;
-        left: 35px;
-        border: 2px dashed lightgray;
-        width: 50px;
-        height: 25px;
-    }
-`;
-
-const optionsListExtraStyles = templateLiteralsParser`
+const optionsDroppableExtraStyles = templateLiteralsParser`
+    border: 0;
+    flex: 1 1 200px;
 `;
 
 function Test() {
 
+    const [options, setOptions] = useState(OPTIONS);
 
-    /*return (
-        <Container1>
-            <Container2>
-                <Container3>
-                    <Item></Item>
-                    <Item>Item 2</Item>
-                    <Item>Item 3</Item>
-                    <Item>Item 4</Item>
-                    <Item>Item 5</Item>
-                    <Item>Item 6</Item>
-                </Container3>
-            </Container2>
-        </Container1>
-    )*/
+    const handleDragEnd = useCallback(({ destination, source }) => {
+        if (!destination) {
+          return;
+        }
 
-    const renderDroppable1 = (provided) => (
+        const newOptions = [...options];
+    
+        const spliced = newOptions.splice(source.index, 1)[0];
+        newOptions.splice(destination.index, 0, spliced);
+
+        setOptions(newOptions);
+    }, [options]);
+
+
+    const renderDroppableList = (provided) => (
         <OptionsList
             provided={provided}
             >
-            {[{id: 'option_1', label: 'option 1'}, {id: 'option_2', label: 'option 2'}].map((option, index) => (
+            {options.map((option, index) => (
                 <Option
                     key={option.id}
                     index={index}
@@ -76,35 +88,21 @@ function Test() {
             ))}
         </OptionsList>
     );
-
-    const renderDroppable2 = (provided) => (
-        <OptionsList
-            provided={provided}
-            >
-            {[{id: 'option_3', label: 'option 3'}, {id: 'option_4', label: 'option 4'}].map((option, index) => (
-                <Option
-                    key={option.id}
-                    index={index}
-                    option={option} />
-            ))}
-        </OptionsList>
-    );
-
+    
     return (
-        <Container>
-            <DragDropContext>
+        <DragDropContext onDragEnd={handleDragEnd}>
+            <Container>
+                <StaticList list={STATIC_LIST} />
                 <OptionsDroppable
-                    title='Droppable 1'
+                    title='Droppable'
+                    droppableId='droppableId1'
+                    extraStyles={optionsDroppableExtraStyles}
+                    isCombineEnabled
                 >
-                    {renderDroppable1}
+                    {renderDroppableList}
                 </OptionsDroppable>
-                <OptionsDroppable
-                    title='Droppable 2'
-                >
-                    {renderDroppable2}
-                </OptionsDroppable>
-            </DragDropContext>
-        </Container>
+            </Container>
+        </DragDropContext>
     );
 }
 
