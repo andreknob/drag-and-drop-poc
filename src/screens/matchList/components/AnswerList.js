@@ -7,8 +7,8 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
 
-    flex: 1 1 200px;
-    margin: 8px;
+    flex: 3 1 200px;
+    margin: 8px 8px 8px 0px;
 `;
 
 const Title = styled.h3`
@@ -24,13 +24,20 @@ const List = styled.div`
     padding: 8px;
 `;
 
-function AnswerList({ answerList, innerRef }) {
+function AnswerList({ innerRef, answerDroppableMap, correctAnswersMap }) {
     const { ANSWERS } = CONSTANTS.DROPPABLES;
     return (
         <Container>
             <Title>Answer list</Title>
             <List ref={innerRef}>
-                {Object.keys(ANSWERS).map((item, index) => (<AnswerDroppable key={item.id} index={index} answer={item} />))}
+                {ANSWERS.map(({ id }) => (
+                    <AnswerDroppable
+                        key={id}
+                        droppableId={id}
+                        answer={answerDroppableMap[id]}
+                        isAnswerCorrect={correctAnswersMap[id]}
+                    />
+                ))}
             </List>
         </Container>
     );

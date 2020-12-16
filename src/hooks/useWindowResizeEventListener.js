@@ -1,14 +1,14 @@
 import { useCallback, useLayoutEffect } from 'react';
 import useDebounce from './useDebounce';
 
-function useWindowResizeEventListener(fn) {
+function useWindowResizeEventListener(fn, delay = 50) {
     const onResize = useCallback(function () {
         if (typeof fn === 'function') {
             fn(window.innerWidth, window.innerHeight);
         }
     }, [fn]);
 
-    const debounced = useDebounce(onResize, 50);
+    const debounced = useDebounce(onResize, delay);
 
     useLayoutEffect(() => {
         onResize();

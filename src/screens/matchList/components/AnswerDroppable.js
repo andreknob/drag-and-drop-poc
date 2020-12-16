@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Droppable } from 'react-beautiful-dnd';
 import AnswerDraggable from './AnswerDraggable';
@@ -15,7 +15,7 @@ const DroppableContainer = styled.div`
     max-height: ${props => props.answerDraggableSize?.height + 2}px;
     overflow: hidden;
     position: relative;
-    background-color: ${props => props.highlightBackground ? 'skyblue' : 'initial'};
+    background-color: ${props => props.backgroundColor};
     transition: background-color 0.2s ease;
     min-height: 46px;
 
@@ -35,14 +35,13 @@ const DroppableContainer = styled.div`
 function AnswerDroppable(props) {
     const {
         answer = {},
+        droppableId,
         isDropDisabled,
         isAnswerCorrect,
     } = props;
 
     const answerDraggableElement = useRef();
     const [answerDraggableSize, setAnswerDraggableSize] = useState();
-
-    const draggableId = useMemo(() => answer.id, [answer]);
 
     const setAnswerDraggableRef = useCallback((element) => {
         answerDraggableElement.current = element
@@ -55,23 +54,26 @@ function AnswerDroppable(props) {
         });
     }, [answerDraggableElement, setAnswerDraggableSize]);
 
-    useWindowResizeEventListener(handleWindowResize);
+    useWindowResizeEventListener(handleWindowResize, 0);
 
     const renderChildren = useCallback((provided, snapshot) => {
-        const isForeignDraggableDraggingOver = snapshot.isDraggingOver && snapshot.draggingOverWith !== answer.id; 
-
+        const isForeignDraggableDraggingOver = snapshot.isDraggingOver && snapshot.draggingOverWith !== answer.id;
+        
+        let backgroundColor = isForeignDraggableDraggingOver ? 'skyblue' : 'initial';    
+        if (isAnswerCorrect === false && !isForeignDraggableDraggingOver) {
+            backgroundColor = '#FF9999';
+        }
         return (
             <DroppableContainer
                 ref={provided.innerRef}
                 {...provided.droppableProps}
                 answerDraggableSize={answerDraggableSize}
-                highlightBackground={isForeignDraggableDraggingOver}
+                backgroundColor={backgroundColor}
             >
                 <AnswerDraggable
                     answer={answer}
                     setAnswerDraggableRef={setAnswerDraggableRef}
                     isAnswerCorrect={isAnswerCorrect}
-                    draggableId={draggableId}
                     isForeignDraggableDraggingOver={isForeignDraggableDraggingOver}
                 />
                 {provided.placeholder}
@@ -79,7 +81,6 @@ function AnswerDroppable(props) {
         );
     }, [
         answer,
-        draggableId,
         isAnswerCorrect,
         answerDraggableSize,
         setAnswerDraggableRef
@@ -88,10 +89,9 @@ function AnswerDroppable(props) {
     return (
         <Container>
             <Droppable
-                droppableId={`droppable_${answer.id}`}
+                droppableId={droppableId}
                 direction={'horizontal'}
                 isDropDisabled={isDropDisabled}
-                isCombineEnabled
             >
                 {renderChildren}
             </Droppable>

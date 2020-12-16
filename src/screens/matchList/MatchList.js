@@ -9,8 +9,6 @@ import MatchListBoard from './components/MatchListBoard';
 import CONSTANTS from './Constants';
 import EXTRA_STYLES from './ExtraStyles';
 
-// const CORRECT_ANSWER = ['option_1', 'option_2', 'option_3', 'option_4', 'option_5'];
-
 const Container = styled.div`
     display: flex;
     flex-direction: column;
@@ -21,56 +19,64 @@ const Container = styled.div`
 
 function MatchList() {
     const [options, setOptions] = useState(CONSTANTS.OPTIONS);
-    const [answers, setAnswers] = useState(CONSTANTS.ANSWERS);
+    const [answerDroppableMap, setAnswerDroppableMap] = useState(CONSTANTS.ANSWER_DROPPABLE_MAP);
     const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
+    const [correctAnswersMap, setCorrectAnswersMap] = useState({});
 
     const answerListElement = useRef();
 
-    const swapAnswerToAnswer = useCallback((destination, source) => {
-        const sourceIndex = answers.findIndex(item => source.droppableId.includes(item.id));
-        const destinationIndex = answers.findIndex(item => destination.droppableId.includes(item.id));
-    
-        const newAnswers = [...answers];
+    const swapAnswerToAnswer = useCallback((source, destination) => {
+        const sourceAnswer = answerDroppableMap[source.droppableId];
+        const destinationAnswer = answerDroppableMap[destination.droppableId];
+
         const newOptions = [...options];
     
-        if (!answers[destinationIndex].id.includes('no-option')) {
-            newOptions.push(answers[destinationIndex]);
+        if (!(CONSTANTS.EMPTY_OPTION_REGEX.test(destinationAnswer.id))) {
+            newOptions.push(destinationAnswer);
         }
-        newAnswers[destinationIndex] = answers[sourceIndex];
-        newAnswers[sourceIndex] = { id: `no-option_${sourceIndex}` };
+        const sourceIndex = Object.keys(answerDroppableMap).indexOf(source.droppableId);
+
+        const newAnswerDroppableMap = { ...answerDroppableMap };
+        newAnswerDroppableMap[destination.droppableId] = sourceAnswer;
+        newAnswerDroppableMap[source.droppableId] = { id: `empty-option_${sourceIndex}` };
     
-        setAnswers(newAnswers);
         setOptions(newOptions);
-    }, [answers, options, setAnswers, setOptions]);
+        setAnswerDroppableMap(newAnswerDroppableMap);
+    }, [answerDroppableMap, setAnswerDroppableMap, options, setOptions]);
 
     const swapAnswerToOption = useCallback((source) => {
-        const sourceIndex = answers.findIndex(item => source.droppableId.includes(item.id));
+        const sourceAnswer = answerDroppableMap[source.droppableId];
     
-        const newAnswers = [...answers];
         const newOptions = [...options];
-    
-        newOptions.push(answers[sourceIndex]);
+        newOptions.push(sourceAnswer);
 
-        newAnswers[sourceIndex] = { id: `no-option_${sourceIndex}` };
+        const sourceIndex = Object.keys(answerDroppableMap).indexOf(source.droppableId);
+
+        const newAnswerDroppableMap = { ...answerDroppableMap };
+        newAnswerDroppableMap[source.droppableId] = { id: `empty-option_${sourceIndex}` };
     
-        setAnswers(newAnswers);
         setOptions(newOptions);
-    }, [answers, options, setAnswers, setOptions]);
+        setAnswerDroppableMap(newAnswerDroppableMap);
+    }, [answerDroppableMap, setAnswerDroppableMap, options, setOptions]);
 
-    const swapOptionToAnswer = useCallback((destination, source) => {
+    const swapOptionToAnswer = useCallback((source, destination) => {
         const newOptions = [...options];
         const spliced = newOptions.splice(source.index, 1)[0];
     
-        const newAnswers = [...answers];
-        const destinationIndex = answers.findIndex(item => destination.droppableId.includes(item.id));
+        const newAnswerDroppableMap = { ...answerDroppableMap };
+        const destinationAnswer = answerDroppableMap[destination.droppableId];
 
-        newAnswers[destinationIndex] = spliced;
+        if (!(CONSTANTS.EMPTY_OPTION_REGEX.test(destinationAnswer.id))) {
+            newOptions.push(destinationAnswer);
+        }
+
+        newAnswerDroppableMap[destination.droppableId] = spliced;
     
-        setAnswers(newAnswers);
         setOptions(newOptions);
-    }, [answers, options, setAnswers, setOptions]);
+        setAnswerDroppableMap(newAnswerDroppableMap);
+    }, [answerDroppableMap, setAnswerDroppableMap, options, setOptions]);
 
-    const swapOptionToOption = useCallback((destination, source) => {
+    const swapOptionToOption = useCallback((source, destination) => {
         const newOptions = [...options];
     
         const spliced = newOptions.splice(source.index, 1)[0];
@@ -79,8 +85,9 @@ function MatchList() {
         setOptions(newOptions);
     }, [options, setOptions]);
 
-    const handleDragEnd = useCallback(({ destination, source }) => {
+    const handleDragEnd = useCallback(({ source, destination }) => {
         setIsAnswerCorrect(null);
+        setCorrectAnswersMap({});
 
         if (!destination) {
           return;
@@ -88,16 +95,16 @@ function MatchList() {
         
         if (source.droppableId === CONSTANTS.DROPPABLES.OPTIONS) {
             if (destination.droppableId === CONSTANTS.DROPPABLES.OPTIONS) {
-                swapOptionToOption(destination, source);
+                swapOptionToOption(source, destination);
                 return;
             }
 
-            swapOptionToAnswer(destination, source);
+            swapOptionToAnswer(source, destination);
             return ;
         }
 
         if (destination.droppableId !== CONSTANTS.DROPPABLES.OPTIONS) {
-            swapAnswerToAnswer(destination, source);
+            swapAnswerToAnswer(source, destination);
             return;
         }
 
@@ -106,12 +113,31 @@ function MatchList() {
     }, [swapAnswerToAnswer, swapAnswerToOption, swapOptionToAnswer, swapOptionToOption]);
 
     const handleCheckResult = useCallback(() => {
+        const correctAnswersMap = Object.keys(answerDroppableMap).map(key => {
+            const answer = answerDroppableMap[key];
+            const droppable = CONSTANTS.DROPPABLES.ANSWERS.find(item => item.id === key);
 
-    }, []);
+            const isAnswerCorrect = CONSTANTS.CORRECT_ANSWERS_MAP[droppable.associatedStaticItemId] === answer.id;
+            return {
+                droppableId: droppable.id,
+                isAnswerCorrect
+            };
+        }).reduce((acc, item) => {
+            acc[item.droppableId] = item.isAnswerCorrect;
+
+            return acc;
+        }, {});
+
+        const isAnswerCorrect = Object.keys(correctAnswersMap).every(key => correctAnswersMap[key]);
+
+        setCorrectAnswersMap(correctAnswersMap);
+        setIsAnswerCorrect(isAnswerCorrect);
+    }, [answerDroppableMap, setCorrectAnswersMap]);
 
     const handleTryAgain = useCallback(() => {
         setIsAnswerCorrect(null);
-
+        setCorrectAnswersMap({});
+        setAnswerDroppableMap(CONSTANTS.ANSWER_DROPPABLE_MAP);
         setOptions(CONSTANTS.OPTIONS);
     }, []);
 
@@ -120,7 +146,6 @@ function MatchList() {
             provided={provided}
             extraStyles={EXTRA_STYLES.OPTIONS_LIST}
             isDraggingOver={snapshot.isDraggingOver}
-            isAnswerCorrect={isAnswerCorrect}
         >
             {options.map((option, index) => (
                 <Option
@@ -131,12 +156,17 @@ function MatchList() {
                     extraStyles={EXTRA_STYLES.OPTION} />
             ))}
         </OptionsList>
-    ), [options, isAnswerCorrect]);
-    
+    ), [options]);
+
     return (
         <Container>
             <DragDropContext onDragEnd={handleDragEnd}>
-                <MatchListBoard staticList={CONSTANTS.STATIC_LIST} answerList={answers} innerRef={answerListElement} />
+                <MatchListBoard
+                    innerRef={answerListElement}
+                    staticList={CONSTANTS.STATIC_LIST}
+                    answerDroppableMap={answerDroppableMap}
+                    correctAnswersMap={correctAnswersMap}
+                />
                 <OptionsDroppable
                     title='Options'
                     direction={'horizontal'}

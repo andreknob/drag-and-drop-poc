@@ -12,18 +12,27 @@ const Item = styled.div`
     padding: 12px;
 
     flex-grow: 1;
-`;
-const Separator = styled.div`
-    border: 4px solid black;
-    height: 4px;
-    width: 50px;
+    
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    &:after {
+        content: '';
+        border-bottom: 8px dotted lightgray;
+        width: ${props => props.placeholderWidth}px;
+        position: absolute;
+        right: 0px;
+        transform: translate(${props => props.placeholderWidth + 8}px, 0);
+    }
 `;
 
-function StaticItem({ item }) {
+function StaticItem({ item, placeholderWidth }) {
 
     return (
         <Container>
-            <Item>{item.label}</Item>
+            <Item placeholderWidth={placeholderWidth}>{item.label}</Item>
         </Container>
     );
 }

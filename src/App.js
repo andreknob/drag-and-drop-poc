@@ -8,6 +8,7 @@ import Test from './screens/test/Test';
 import Test2 from './screens/test/Test2';
 import Test3 from './screens/test/Test3';
 import Test4 from './screens/test/Test4';
+import Test5 from './screens/test/Test5';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
                 <Route path="/test2" component={Test2} />
                 <Route path="/test3" component={Test3} />
                 <Route path="/test4" component={Test4} />
+                <Route path="/test5" component={Test5} />
             </Switch>
         </Router>
     );

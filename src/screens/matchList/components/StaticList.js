@@ -6,8 +6,8 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
 
-    flex: 1 1 200px;
-    margin: 8px;
+    flex: 3 1 200px;
+    margin: 8px 0px 8px 8px;
 `;
 
 const Title = styled.h3`
@@ -23,13 +23,13 @@ const ListContainer = styled.div`
     padding: 8px;
 `;
 
-function StaticList({ list }) {
+function StaticList({ list, placeholderWidth }) {
 
     return (
         <Container>
             <Title>Static list</Title>
             <ListContainer>
-                {list.map(item => (<StaticItem key={item.id} item={item} />))}
+                {list.map(item => (<StaticItem key={item.id} item={item} placeholderWidth={placeholderWidth} />))}
             </ListContainer>
         </Container>
     );

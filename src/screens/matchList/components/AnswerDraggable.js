@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
+import CONSTANTS from '../Constants';
 
 const AnswerDiv = styled.div`
     background-color: ${props => props.isAnswerCorrect != null ? (props.isAnswerCorrect ? 'lightgreen' : '#FF9999') : 'white'};
@@ -13,7 +14,7 @@ const AnswerDiv = styled.div`
     height: 100%;
     box-sizing: border-box;
 
-    visibility: ${props => !props.answer.id.includes('no-option') ? 'visible' : 'hidden'};
+    visibility: ${props => !(CONSTANTS.EMPTY_OPTION_REGEX.test(props.answer.id)) ? 'visible' : 'hidden'};
 
     &[style] {
         transition-duration: 0.001s;
@@ -56,7 +57,7 @@ function AnswerDraggable(props) {
     } = props;
 
     return (
-        <Draggable draggableId={draggableId} index={0}>
+        <Draggable draggableId={answer.id} index={0}>
             {(provided) => (
                 <Answer
                     answer={answer}

@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
+import useWindowResizeEventListener from '../../../hooks/useWindowResizeEventListener';
 import AnswerList from './AnswerList';
+import SeparatorPlaceholder from './SeparatorPlaceholder';
 import StaticList from './StaticList';
 
 const Container = styled.div`
@@ -11,14 +13,31 @@ const Container = styled.div`
     margin: 8px;
 `;
 
-function MatchListBoard({ staticList, answerList, innerRef }) {
+function MatchListBoard(props) {
+    const { 
+        innerRef,
+        staticList,
+        answerDroppableMap,
+        correctAnswersMap
+    } = props;
+    
+    const [placeholderWidth, setPlaceholderWidth] = useState();
+    const placeholderElement = useRef();
+
+    const handleWindowResize = useCallback(() => {
+        setPlaceholderWidth(placeholderElement.current.clientWidth);
+    }, [placeholderElement, setPlaceholderWidth]);
+
+    useWindowResizeEventListener(handleWindowResize, 0);
 
     return (
         <Container>
-            <StaticList list={staticList} />
+            <StaticList list={staticList} placeholderWidth={placeholderWidth} />
+            <SeparatorPlaceholder innerRef={placeholderElement} />
             <AnswerList
                 innerRef={innerRef}
-                answerList={answerList} />
+                answerDroppableMap={answerDroppableMap}
+                correctAnswersMap={correctAnswersMap} />
         </Container>
     );
 }
