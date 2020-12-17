@@ -19,11 +19,19 @@ const optionExtraStyles = templateLiteralsParser`
     margin-right: 16px;
     padding: 12px;
     
-    flex: ${props => (props.isDragging && props.draggingOver !== 'optionsDroppable') ? `1 0 ${props.answerItemWidth}px` : '1 1 150px'};
+    flex: 1 1 150px;
 
     &[style] {
         width: ${props => (props.isDragging && props.draggingOver !== 'optionsDroppable') ? `${props.answerItemWidth}px !important` : 'auto'};
     }
+`;
+
+const optionsDroppable = templateLiteralsParser`
+    display: flex;
+    justify-content: space-between;
+    background-color: ${props => getBackgroundColor(props.isDraggingOver, props.isAnswerCorrect)};
+    padding: 12px;
+    min-height: 50px;
 `;
 
 const optionsListExtraStyles = templateLiteralsParser`
@@ -36,5 +44,6 @@ const optionsListExtraStyles = templateLiteralsParser`
 
 export default {
     OPTION: optionExtraStyles,
+    OPTIONS_DROPPABLE: optionsDroppable,
     OPTIONS_LIST: optionsListExtraStyles
 };

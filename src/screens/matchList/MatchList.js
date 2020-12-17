@@ -26,6 +26,10 @@ function MatchList() {
     const answerListElement = useRef();
 
     const swapAnswerToAnswer = useCallback((source, destination) => {
+        if (source.droppableId === destination.droppableId) {
+            return;
+        }
+
         const sourceAnswer = answerDroppableMap[source.droppableId];
         const destinationAnswer = answerDroppableMap[destination.droppableId];
 
@@ -170,6 +174,7 @@ function MatchList() {
                 <OptionsDroppable
                     title='Options'
                     direction={'horizontal'}
+                    extraStyles={EXTRA_STYLES.OPTIONS_DROPPABLE}
                 >
                     {renderOptionsList}
                 </OptionsDroppable>

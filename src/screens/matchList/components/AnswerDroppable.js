@@ -71,6 +71,7 @@ function AnswerDroppable(props) {
                 backgroundColor={backgroundColor}
             >
                 <AnswerDraggable
+                    key={answer.id}
                     answer={answer}
                     setAnswerDraggableRef={setAnswerDraggableRef}
                     isAnswerCorrect={isAnswerCorrect}

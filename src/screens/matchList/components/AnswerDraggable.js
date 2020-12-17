@@ -21,6 +21,7 @@ const AnswerDiv = styled.div`
         transform: ${props => props.isForeignDraggableDraggingOver ? 'translate(347px, 0) !important' : 'none'};
     }
 `;
+// acho que dá pra tirar esse translate
 
 function Answer(props) {
     const {

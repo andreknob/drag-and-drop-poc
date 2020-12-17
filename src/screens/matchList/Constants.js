@@ -27,7 +27,7 @@ const CORRECT_ANSWERS_MAP = {
 const OPTIONS = [
     {
         id: 'option_0',
-        label: 'Berlim'
+        label: 'Munich'
     },
     {
         id: 'option_1',
@@ -39,7 +39,7 @@ const OPTIONS = [
     },
     {
         id: 'option_3',
-        label: 'Rio de Janeiro'
+        label: 'São Paulo'
     },
     {
         id: 'option_4',
