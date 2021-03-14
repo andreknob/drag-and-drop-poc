@@ -1,7 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
-import styled from 'styled-components';
-import templateLiteralsParser from '../../util/templateLiteralsParser';
+import styled, { css } from 'styled-components';
 import useWindowResizeEventListener from '../../hooks/useWindowResizeEventListener';
 import Option from '../../components/dragAndDrop/Option';
 import OptionsDroppable from '../../components/dragAndDrop/OptionsDroppable';
@@ -20,7 +19,7 @@ const DnDContainer = styled.div`
     display: flex;
     flex-wrap: wrap;
 `;
-const optionsListExtraStyles = templateLiteralsParser`
+const optionsListExtraStyles = css`
     background-color: ${props => props.isDraggingOver && props.isDraggingAnswer ? 'skyblue' : 'white'};
 `;
 
